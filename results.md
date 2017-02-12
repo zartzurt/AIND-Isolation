@@ -1,11 +1,11 @@
 # Isolation Game(v.Knight) Heuristic Analysis
 
-### Test Results
+### Tournament result
 Each result is average of 6 tournaments each 10 matches against opponents Random, MM_Null, MM_Open, MM_Improved, AB_Null, AB_Open, AB_Improved . In total 280 games.
 
 | Heuristic | Win Probability | Avg. Depth | End Game Hit Rate |
 | ------ | ------ | ------ | ------ |
-| improved_score | 0.61 | 5.690 | 0.228 |
+| ID_Improved | 0.61 | 5.690 | 0.228 |
 | ID_null | 0.55 | N/A | N/A |
 | random_score | 0.78 | 5.530 | 0.289 |
 | random_score(w/o util) | 0.34 | N/A | N/A |
@@ -18,6 +18,25 @@ Each result is average of 6 tournaments each 10 matches against opponents Random
 | variable_heuristic_score | 0.77 | 5.467 | 0.285 |
 * **Avg.Depth** is the sum of deepest depth reached during iterative deepening / total get_move count
 * **End Game Hit Rate** is sum of get_move calls which return either a +inf or -inf / total get_move count
+
+### ID_Improved vs random_score
+
+Results of total 100 games 
+
+| Heuristic | Win Probability |
+| ------ | ------ | 
+| ID_Improved | 0.30 | 
+| random_score | 0.70 | 
+
+### random_score vs variable_heuristic_score
+
+Results of total 200 games 
+
+| Heuristic | Win Probability |
+| ------ | ------ | 
+| variable_heuristic_score | 0.23 | 
+| random_score | 0.77 | 
+
 ## Heuristics
 ### random_score
 * **function:** random value between 0 and 1
@@ -74,6 +93,6 @@ implementation for the purposes of this assignment. I couldn't use this heuristi
 
 I had lots of difficulties trying to come up with a conclusion. First my iterative deepening was flawed so that all fixed depth algorithms were performing very poor. Since this was not covered in unit tests I did not realise this until I told about my score on slack. After fixing the bug I had to do all the tests again and came up with this table above. According to my tests the maximum winning heuristic is random moving with end game utility function which won 0.78 percent of the time in average against all the opponents. First I thought this was a bug and wrote different implementations of get_move, minimax and alphabeta however it did not change the score or I reproduced the bug somehow.
 
-According to tests my best performing heuristic is random_score however after all effort I choose to submit my project with variable_heuristic_score since it has similar high avg depth and end game hit rate. Finally I think the randomized first move nature of the tournament setup makes it very hard to compare well performing heuristics.
+According to tests my best performing heuristic is random_score and variable_heuristic_score however variable_heuristic_score internally uses random score for most of the beginning game. After running one on one tests random score won against variable_heuristic_score on 0.77 percent of the time. This made it obvious my afvanted heuristic is a haux however after all the effort I choose to submit my project with variable_heuristic_score since it has similar high avg depth and end game hit rate. Finally I think the randomized first move nature of the tournament setup makes it very hard to compare well performing heuristics.
 
 

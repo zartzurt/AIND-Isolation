@@ -5,13 +5,11 @@ alpha-beta search agents by running a round-robin tournament for the student
 agent. Note that all agents are constructed from the student CustomPlayer
 implementation, so any errors present in that class will affect the outcome
 here.
-
 The student agent plays a fixed number of "fair" matches against each test
 agent. The matches are fair because the board is initialized randomly for both
 players, and the players play each match twice -- switching the player order
 between games. This helps to correct for imbalances in the game due to both
 starting position and initiative.
-
 For example, if the random moves chosen for initialization are (5, 2) and
 (1, 3), then the first match will place agentA at (5, 2) as player 1 and
 agentB at (1, 3) as player 2 then play to conclusion; the agents swap
@@ -163,7 +161,7 @@ def main():
 	               Agent(CustomPlayer(score_fn=custom_score, **CUSTOM_ARGS), "Student")]
 
 	print(DESCRIPTION)
-	for agentUT in test_agents[:-1]:
+	for agentUT in test_agents:
 		print("")
 		print("*************************")
 		print("{:^25}".format("Evaluating: " + agentUT.name))
@@ -177,9 +175,9 @@ def main():
 		print("{!s:<15}{:>10.2f}%".format(agentUT.name, win_ratio))
 		if agentUT.player.total_depth is not None:
 			print("Average depth:%.3f, branch:%.3f, end_of_tree:%.3f" % (
-			agentUT.player.total_depth / agentUT.player.total_move,
-			agentUT.player.total_branch / agentUT.player.total_move,
-			agentUT.player.total_end_of_tree / agentUT.player.total_move))
+				agentUT.player.total_depth / agentUT.player.total_move,
+				agentUT.player.total_branch / agentUT.player.total_move,
+				agentUT.player.total_end_of_tree / agentUT.player.total_move))
 
 
 if __name__ == "__main__":

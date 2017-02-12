@@ -12,6 +12,8 @@ import sys
 import random
 
 logging.basicConfig(level=logging.ERROR)
+
+
 # logging.basicConfig(level=logging.DEBUG)
 
 
@@ -35,9 +37,9 @@ def longest_path(start_loc, path, empty_set, time_left, timeout=10.):
 	"""
 	Find the longest path traversable from the starting position using depth first search.
 
-	:param start_loc:
-	:param path:
-	:param empty_set:
+	:param start_loc: starting position
+	:param path: starting path
+	:param empty_set: empty spaces available
 	:return:
 	"""
 	if time_left() < timeout:
@@ -55,6 +57,7 @@ def longest_path(start_loc, path, empty_set, time_left, timeout=10.):
 		if len(next_path) > len(max_path):
 			max_path = next_path
 	return max_path
+
 
 def longest_path_score(game, player):
 	"""
@@ -79,6 +82,7 @@ def longest_path_score(game, player):
 	logging.info('longest_path_score time to calculate score:%.3fms' % ((t1 - t0) * 1000))
 	return float(len(my_longest_path) - len(opp_longest_path))
 
+
 def flood_fill(start_loc, empty_set, time_left, timeout=10.):
 	""" Given a start location and set of empty spaces. Recursively fill all
 	space reachable from location and return unreachable spaces in empty_set.
@@ -94,6 +98,7 @@ def flood_fill(start_loc, empty_set, time_left, timeout=10.):
 	empty_set.discard(start_loc)
 	for loc in possible_moves(start_loc):
 		flood_fill(loc, empty_set, time_left, timeout)
+
 
 def find_open_space(game, player):
 	""" Find the number of reachable spaces for both players
@@ -129,6 +134,14 @@ def reachable_space_score(game, player):
 	logging.info('reachable_space_score time to calculate score:%.3fms' % ((t1 - t0) * 1000))
 	return float(len(own_open_space) - len(opp_open_space))
 
+
+def random_score_wu(game, player):
+	utility = game.utility(player)
+	if utility != 0:
+		return utility
+	return random_score(game, player)
+
+
 def custom_score(game, player):
 	"""
 	Parameters
@@ -151,14 +164,16 @@ def custom_score(game, player):
 	utility = game.utility(player)
 	if utility != 0:
 		return utility
-	return variable_heuristic_score(game, player)
+
+	return random_score(game, player)
+
 
 def variable_heuristic_score(game, player):
 	# choose the heuristic according to percentage of empty spaces left
 	remaining_game = len(game.get_blank_spaces()) / (game.width * game.height)
 	if remaining_game > 0.3:
 		return random_score(game, player)
-	elif remaining_game  >  0.2:
+	elif remaining_game > 0.2:
 		return reachable_space_score(game, player)
 	return longest_path_score(game, player)
 
@@ -179,7 +194,6 @@ def random_score(game, player):
 	"""
 	import random
 	return random.random()
-
 
 
 def improved_score(game, player):
@@ -306,11 +320,12 @@ class CustomPlayer:
 		best_move = (-1, -1)
 		if len(legal_moves) > 0:
 			# if get_move timeouts moving random maximises the win rate
-			best_move = legal_moves[random.randint(0,len(legal_moves)-1)]
+			best_move = legal_moves[random.randint(0, len(legal_moves) - 1)]
 
 		# keeping an eye on deepest depth visited for logging
 		best_search_depth = 0
 		reached_end_of_tree = False
+
 		search_method = self.minimax if self.method == 'minimax' else self.alphabeta
 		# depending on the iterative flag, we either call the search one time with the given search_depth or
 		# we start with depth one and increment depth till we time out our hit the bottom of the tree
@@ -366,9 +381,9 @@ class CustomPlayer:
 		if self.time_left() < self.TIMER_THRESHOLD:
 			raise Timeout()
 
-		legal_moves = game.get_legal_moves(player=game.active_player)
-		# return if maximum depth is found or game has ended
-		if depth == 0 or game.utility(self) != 0:
+		legal_moves = game.get_legal_moves()
+		# return score if maximum depth is found or game has ended
+		if depth == 0 or len(legal_moves) == 0:
 			return self.score(game, self), legal_moves[0] if legal_moves else (-1, -1)
 		# get scores from legal moves
 		move_scores = [(self.minimax(game.forecast_move(move), depth - 1, not maximizing_player), move) for move in
@@ -411,9 +426,10 @@ class CustomPlayer:
 		"""
 		if self.time_left() < self.TIMER_THRESHOLD:
 			raise Timeout()
-		legal_moves = game.get_legal_moves(player=game.active_player)
-		# return if maximum depth is found or game has ended
-		if depth == 0 or game.utility(self) != 0:
+
+		legal_moves = game.get_legal_moves()
+		# return score if maximum depth is found or game has ended
+		if depth == 0 or len(legal_moves) == 0:
 			return self.score(game, self), legal_moves[0] if legal_moves else (-1, -1)
 		# keep child scores
 		move_scores = list()
